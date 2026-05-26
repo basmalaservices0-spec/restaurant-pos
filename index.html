@@ -261,53 +261,37 @@
         .receipt-line { border-bottom: 1px dashed #000; margin: 10px 0; }
         .receipt-item { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
 
-        .admin-box { background: #11141a; border: 1px solid #00f2fe; border-radius: 12px; width: 100%; max-width: 850px; max-height: 85vh; padding: 25px; display: flex; flex-direction: column; }
-        .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; }
+        .admin-box { background: #11141a; border: 1px solid #00f2fe; border-radius: 12px; width: 100%; max-width: 950px; max-height: 90vh; padding: 25px; display: flex; flex-direction: column; overflow-y: auto; }
+        .analytics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 15px 0; }
         .analytics-card { background: #171b24; padding: 15px; border-radius: 8px; border-left: 4px solid #ff007f; }
         .analytics-card.prime { border-left-color: #00f2fe; }
         .analytics-card span { font-size: 11px; color: #a4a7ab; display: block; }
-        .analytics-card h2 { font-size: 18px; color: #fff; margin-top: 5px; }
+        .analytics-card h2 { font-size: 16px; color: #fff; margin-top: 5px; }
 
-        .sales-table-wrapper { flex: 1; overflow-y: auto; border: 1px solid #242933; border-radius: 6px; }
-        .sales-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .sales-table th, .sales-table td { padding: 10px; border-bottom: 1px solid #242933; text-align: left; }
-        .sales-table th { background: #171b24; color: #a4a7ab; }
+        .admin-sections-wrapper { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; flex: 1; min-height: 300px; }
+        .sales-table-wrapper, .inventory-wrapper { border: 1px solid #242933; border-radius: 6px; overflow-y: auto; background: #141822; padding: 10px; }
+        .sales-table, .inventory-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .sales-table th, .sales-table td, .inventory-table th, .inventory-table td { padding: 8px; border-bottom: 1px solid #242933; text-align: left; color: #fff; }
+        .sales-table th, .inventory-table th { background: #171b24; color: #a4a7ab; }
+
+        .crud-form { background: #171b24; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #242933; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+        .crud-form label { font-size: 11px; color: #a4a7ab; display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 120px; }
+        .crud-form input, .crud-form select { background: #11141a; border: 1px solid #242933; color: #fff; padding: 6px; border-radius: 4px; outline: none; }
+        .crud-form button { padding: 6px 15px; background: #00f2fe; border: none; color: #0b0c10; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .crud-form button:hover { background: #ff007f; color: #fff; }
 
         /* Responsive Layout Overrides for Mobile View 📱 */
         @media (max-width: 900px) {
             .pos-container { grid-template-columns: 1fr; }
-            
-            /* إخفاء لوحة الأوردر الجانبية وتحويلها لشاشة منبثقة تتحكمي فيها بالزرار */
-            .order-terminal {
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 100%;
-                height: 100%;
-                transform: translateX(100%); /* مخفية بره الشاشة تماماً */
-            }
-            .order-terminal.active-mobile-cart {
-                transform: translateX(0); /* تظهر سلايد لما تطلبيها */
-            }
-            
-            .close-cart-mobile {
-                display: block;
-                background: #242933;
-                color: #fff;
-                border: none;
-                padding: 6px 12px;
-                border-radius: 4px;
-                font-weight: 600;
-                font-size: 12px;
-                cursor: pointer;
-            }
-
-            .mobile-cart-trigger { display: flex; } /* إظهار الزرار العائم للموبايل */
+            .order-terminal { position: fixed; top: 0; right: 0; width: 100%; height: 100%; transform: translateX(100%); }
+            .order-terminal.active-mobile-cart { transform: translateX(0); }
+            .close-cart-mobile { display: block; background: #242933; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; font-weight: 600; font-size: 12px; cursor: pointer; }
+            .mobile-cart-trigger { display: flex; }
             .products-section { padding: 15px; }
-            .analytics-grid { grid-template-columns: 1fr; gap: 10px; }
+            .analytics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .admin-sections-wrapper { grid-template-columns: 1fr; }
         }
 
-        /* Print Override */
         @media print {
             body * { display: none !important; }
             #bill-modal, #bill-modal * { display: block !important; }
@@ -321,12 +305,11 @@
     <div class="pos-header">
         <div class="pos-logo">BH.AGENCY // POS</div>
         <div class="pos-meta">
-            <button class="admin-btn" onclick="openAdminLog()">📊 Review</button>
+            <button class="admin-btn" onclick="openAdminLog()">📊 Control & Analytics</button>
         </div>
     </div>
 
     <div class="pos-container">
-        <!-- قسم المنتجات -->
         <div class="products-section">
             <div class="controls-row">
                 <div class="search-bar">
@@ -342,7 +325,6 @@
             <div class="products-grid" id="products-grid-container"></div>
         </div>
 
-        <!-- لوحة الأوردر الجانبية / شاشة كاملة عالموبايل -->
         <div class="order-terminal" id="order-terminal-panel">
             <div class="terminal-header">
                 <h3>Active Order</h3>
@@ -360,36 +342,69 @@
         </div>
     </div>
 
-    <!-- زرار الكارت العائم للموبايل فقط -->
     <button class="mobile-cart-trigger" onclick="toggleMobileCart(true)">
         <span>🛒 View Active Order</span>
         <span id="mobile-badge" style="background:#fff; color:#ff007f; padding:2px 8px; border-radius:10px; font-size:12px;">0</span>
     </button>
 
-    <!-- لوحة المالك الإحصائية باليوم -->
     <div class="admin-modal" id="admin-modal">
         <div class="admin-box">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="color: #00f2fe;">Owner Smart Analytics</h3>
-                <button class="admin-btn" style="border-color:#fff; color:#fff;" onclick="closeAdminLog()">Close</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: #00f2fe;">Owner Control Center & Analytics</h3>
+                <button class="admin-btn" style="border-color:#fff; color:#fff;" onclick="closeAdminLog()">Close Panel</button>
             </div>
+
             <div class="analytics-grid">
                 <div class="analytics-card prime"><span>TODAY'S REVENUE</span><h2 id="dash-today-revenue">0.00 EGP</h2></div>
                 <div class="analytics-card"><span>TODAY'S ORDERS</span><h2 id="dash-today-count">0</h2></div>
+                <div class="analytics-card prime"><span>CURRENT MONTH REVENUE</span><h2 id="dash-month-revenue">0.00 EGP</h2></div>
                 <div class="analytics-card"><span>ALL-TIME TOTAL</span><h2 id="dash-all-revenue">0.00 EGP</h2></div>
             </div>
-            <div class="sales-table-wrapper">
-                <table class="sales-table">
-                    <thead>
-                        <tr><th>Date & Time</th><th>Order Details</th><th>Total Amount</th></tr>
-                    </thead>
-                    <tbody id="sales-log-rows"></tbody>
-                </table>
+
+            <div class="crud-form">
+                <label>Item Name
+                    <input type="text" id="crud-name" placeholder="e.g., Cheesy Fries">
+                </label>
+                <label>Price (EGP)
+                    <input type="number" id="crud-price" step="0.01" placeholder="80.00">
+                </label>
+                <label>Category
+                    <select id="crud-category">
+                        <option value="burger">Burgers</option>
+                        <option value="drinks">Drinks</option>
+                        <option value="desserts">Desserts</option>
+                    </select>
+                </label>
+                <label>Icon Emoji
+                    <input type="text" id="crud-img" placeholder="🍟" style="max-width: 60px; text-align: center;">
+                </label>
+                <button onclick="saveProductDynamic()">Add / Update Product</button>
+            </div>
+
+            <div class="admin-sections-wrapper">
+                <div class="sales-table-wrapper">
+                    <h4 style="color:#ff007f; margin-bottom: 10px;">Sales Ledger</h4>
+                    <table class="sales-table">
+                        <thead>
+                            <tr><th>Timestamp</th><th>Details</th><th>Total</th></tr>
+                        </thead>
+                        <tbody id="sales-log-rows"></tbody>
+                    </table>
+                </div>
+
+                <div class="inventory-wrapper">
+                    <h4 style="color:#00f2fe; margin-bottom: 10px;">Dynamic Menu Controls</h4>
+                    <table class="inventory-table">
+                        <thead>
+                            <tr><th>Item</th><th>Category</th><th>Price</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="inventory-rows"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- مودال الفاتورة للطباعة -->
     <div class="invoice-modal" id="bill-modal">
         <div class="receipt-box">
             <h4>BH.AGENCY RESTAURANT</h4>
@@ -414,25 +429,26 @@
     </div>
 
     <script>
-        const menuProducts = [
+        // رابط الـ Web App الخاص بـ Google Apps Script لترحيل البيانات للشيت مباشرة
+        const GOOGLE_SHEET_URL = "YOUR_SCRIPT_URL_HERE"; 
+
+        // المنيو المحدث مع الإضافات الإنجليزية المطلوبة بالكامل
+        let menuProducts = JSON.parse(localStorage.getItem('bh_pos_menu')) || [
             { id: 1, name: 'Classic Beef Burger', price: 140.00, category: 'burger', img: '🍔' },
             { id: 2, name: 'Double Cheese Burger', price: 180.00, category: 'burger', img: '🍔' },
             { id: 3, name: 'Crispy Chicken Sandwich', price: 130.00, category: 'burger', img: '🥪' },
             { id: 4, name: 'French Fries XL', price: 50.00, category: 'burger', img: '🍟' },
-            { id: 10, name: 'BBQ Mushroom Burger', price: 165.00, category: 'burger', img: '🍔' },
-            { id: 11, name: 'Spicy Zinger Wrap', price: 120.00, category: 'burger', img: '🌯' },
-            { id: 5, name: 'Fresh Orange Juice', price: 40.00, category: 'drinks', img: '🍊' },
-            { id: 6, name: 'Cold Brew Iced Coffee', price: 65.00, category: 'drinks', img: '☕' },
-            { id: 7, name: 'Club Soda Blue Neon', price: 45.00, category: 'drinks', img: '🥤' },
-            { id: 12, name: 'Iced Caramel Latte', price: 75.00, category: 'drinks', img: '🧋' },
-            { id: 13, name: 'Strawberry Mojito', price: 55.00, category: 'drinks', img: '🍹' },
-            { id: 14, name: 'Coca Cola Can', price: 30.00, category: 'drinks', img: '🥤' },
-            { id: 15, name: 'Mineral Water', price: 15.00, category: 'drinks', img: '💧' },
-            { id: 8, name: 'Chocolate Fudge Cake', price: 75.00, category: 'desserts', img: '🍰' },
-            { id: 9, name: 'Premium Waffle Ice Cream', price: 85.00, category: 'desserts', img: '🍦' },
-            { id: 16, name: 'Glazed Chocolate Donut', price: 45.00, category: 'desserts', img: '🍩' },
-            { id: 17, name: 'Lotus Biscoff Donut', price: 50.00, category: 'desserts', img: '🍩' },
-            { id: 18, name: 'Red Velvet Cheesecake', price: 90.00, category: 'desserts', img: '🍰' }
+            // قسم المشروبات المحدث (Drinks)
+            { id: 5, name: 'Mineral Water', price: 15.00, category: 'drinks', img: '💧' },
+            { id: 6, name: 'Hot Tea', price: 25.00, category: 'drinks', img: '☕' },
+            { id: 7, name: 'Espresso Coffee', price: 45.00, category: 'drinks', img: '☕' },
+            { id: 8, name: 'Fresh Orange Juice', price: 40.00, category: 'drinks', img: '🍊' },
+            { id: 9, name: 'Cold Brew Iced Coffee', price: 65.00, category: 'drinks', img: '🥤' },
+            // قسم الحلويات المحدث (Desserts)
+            { id: 10, name: 'Glazed Chocolate Donut', price: 45.00, category: 'desserts', img: '🍩' },
+            { id: 11, name: 'Lotus Biscoff Donut', price: 50.00, category: 'desserts', img: '🍩' },
+            { id: 12, name: 'Chocolate Fudge Cake', price: 75.00, category: 'desserts', img: '🍰' },
+            { id: 13, name: 'Premium Vanilla Ice Cream', price: 60.00, category: 'desserts', img: '🍦' }
         ];
 
         let activeCart = [];
@@ -454,7 +470,7 @@
                 card.innerHTML = `
                     <div style="font-size: 32px; margin-bottom: 5px;">${product.img}</div>
                     <h4>${product.name}</h4>
-                    <div class="price">${product.price.toFixed(2)} EGP</div>
+                    <div class="price">${parseFloat(product.price).toFixed(2)} EGP</div>
                 `;
                 grid.appendChild(card);
             });
@@ -574,7 +590,7 @@
             document.getElementById('r-total').innerText = `${net.toFixed(2)} EGP`;
             
             const now = new Date();
-            const dateStr = now.toLocaleDateString();
+            const dateStr = now.toLocaleDateString('en-US'); 
             const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             const fullTimestamp = `${dateStr} ${timeStr}`;
             
@@ -582,6 +598,7 @@
 
             const newOrderRecord = {
                 date: dateStr,
+                monthKey: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`, 
                 timestamp: fullTimestamp,
                 items: itemsSummaryArray.join(', '),
                 total: `${net.toFixed(2)} EGP`,
@@ -591,50 +608,146 @@
             globalSalesLog.push(newOrderRecord);
             localStorage.setItem('bh_pos_sales_log', JSON.stringify(globalSalesLog));
 
+            sendOrderToGoogleSheets(newOrderRecord);
+
             document.getElementById('bill-modal').style.display = 'flex';
+        }
+
+        function sendOrderToGoogleSheets(orderData) {
+            if (GOOGLE_SHEET_URL === "YOUR_SCRIPT_URL_HERE") return;
+
+            fetch(GOOGLE_SHEET_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(orderData)
+            })
+            .then(() => console.log("Order synced to Cloud Storage successfully."))
+            .catch(err => console.error("Cloud Sync Failed, saved locally:", err));
         }
 
         function closeInvoice() {
             document.getElementById('bill-modal').style.display = 'none';
             activeCart = [];
             updateCartTerminalView();
-            toggleMobileCart(false); // إغلاق لوحة الموبايل تلقائياً بعد الفاتورة
+            toggleMobileCart(false);
         }
 
         function openAdminLog() {
             const password = prompt("Enter Admin Password:");
             if (password === "1234") {
-                const tbody = document.getElementById('sales-log-rows');
-                tbody.innerHTML = '';
-                
-                const todayStr = new Date().toLocaleDateString();
-                let todayRevenue = 0;
-                let todayCount = 0;
-                let allTimeRevenue = 0;
-
-                globalSalesLog.forEach(sale => {
-                    allTimeRevenue += sale.rawTotal;
-                    if(sale.date === todayStr) {
-                        todayRevenue += sale.rawTotal;
-                        todayCount++;
-                    }
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${sale.timestamp}</td>
-                        <td style="color:#00f2fe;">${sale.items}</td>
-                        <td style="color:#ff007f; font-weight:bold;">${sale.total}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-
-                document.getElementById('dash-today-revenue').innerText = `${todayRevenue.toFixed(2)} EGP`;
-                document.getElementById('dash-today-count').innerText = todayCount;
-                document.getElementById('dash-all-revenue').innerText = `${allTimeRevenue.toFixed(2)} EGP`;
-                
+                renderAdminDashboard();
                 document.getElementById('admin-modal').style.display = 'flex';
             } else if (password !== null) {
                 alert("Access Denied.");
+            }
+        }
+
+        function renderAdminDashboard() {
+            const tbody = document.getElementById('sales-log-rows');
+            tbody.innerHTML = '';
+            
+            const now = new Date();
+            const todayStr = now.toLocaleDateString('en-US');
+            const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+            let todayRevenue = 0;
+            let todayCount = 0;
+            let monthRevenue = 0;
+            let allTimeRevenue = 0;
+
+            globalSalesLog.forEach(sale => {
+                allTimeRevenue += sale.rawTotal;
+                
+                if(sale.date === todayStr) {
+                    todayRevenue += sale.rawTotal;
+                    todayCount++;
+                }
+
+                if (sale.monthKey === currentMonthKey || (sale.date && sale.date.startsWith(todayStr.substring(0,2)))) {
+                    monthRevenue += sale.rawTotal;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${sale.timestamp}</td>
+                    <td style="color:#00f2fe;">${sale.items}</td>
+                    <td style="color:#ff007f; font-weight:bold;">${sale.total}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('dash-today-revenue').innerText = `${todayRevenue.toFixed(2)} EGP`;
+            document.getElementById('dash-today-count').innerText = todayCount;
+            document.getElementById('dash-month-revenue').innerText = `${monthRevenue.toFixed(2)} EGP`;
+            document.getElementById('dash-all-revenue').innerText = `${allTimeRevenue.toFixed(2)} EGP`;
+
+            renderInventoryManagement();
+        }
+
+        function renderInventoryManagement() {
+            const invBody = document.getElementById('inventory-rows');
+            invBody.innerHTML = '';
+
+            menuProducts.forEach((product, idx) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.img} ${product.name}</td>
+                    <td style="text-transform: capitalize; color:#a4a7ab;">${product.category}</td>
+                    <td><input type="number" step="0.1" value="${product.price}" style="width:70px; background:#11141a; border:1px solid #242933; color:#fff; padding:3px; text-align:center;" onchange="updateInlinePrice(${product.id}, this.value)"> EGP</td>
+                    <td><button style="background:transparent; border:none; color:#ff007f; cursor:pointer; font-weight:bold; font-size:14px;" onclick="removeProductDynamic(${product.id})">Delete</button></td>
+                `;
+                invBody.appendChild(row);
+            });
+        }
+
+        function saveProductDynamic() {
+            const name = document.getElementById('crud-name').value.trim();
+            const price = parseFloat(document.getElementById('crud-price').value);
+            const category = document.getElementById('crud-category').value;
+            const img = document.getElementById('crud-img').value.trim() || '🍽️';
+
+            if (!name || isNaN(price)) {
+                alert("Please fill name and price correctly.");
+                return;
+            }
+
+            const existingIdx = menuProducts.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+            if(existingIdx > -1) {
+                menuProducts[existingIdx].price = price;
+                menuProducts[existingIdx].category = category;
+                menuProducts[existingIdx].img = img;
+            } else {
+                const newId = menuProducts.length > 0 ? Math.max(...menuProducts.map(p => p.id)) + 1 : 1;
+                menuProducts.push({ id: newId, name, price, category, img });
+            }
+
+            localStorage.setItem('bh_pos_menu', JSON.stringify(menuProducts));
+            renderMenuGrid();
+            renderInventoryManagement();
+            
+            document.getElementById('crud-name').value = '';
+            document.getElementById('crud-price').value = '';
+        }
+
+        function updateInlinePrice(id, newPrice) {
+            const priceVal = parseFloat(newPrice);
+            if(isNaN(priceVal) || priceVal < 0) return;
+            
+            const matched = menuProducts.find(p => p.id === id);
+            if(matched) {
+                matched.price = priceVal;
+                localStorage.setItem('bh_pos_menu', JSON.stringify(menuProducts));
+                renderMenuGrid();
+            }
+        }
+
+        function removeProductDynamic(id) {
+            if(confirm("Are you sure you want to remove this item from the menu?")) {
+                menuProducts = menuProducts.filter(p => p.id !== id);
+                localStorage.setItem('bh_pos_menu', JSON.stringify(menuProducts));
+                renderMenuGrid();
+                renderInventoryManagement();
             }
         }
 
