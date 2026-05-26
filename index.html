@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BH.Agency | Premium Restaurant Pasmola System</title>
+    <title>BH.Agency | Premium Restaurant POS</title>
     <style>
         /* Base Styling aligned with BH.Agency Identity */
         * {
@@ -41,18 +41,6 @@
             text-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
         }
 
-        .pos-meta {
-            font-size: 13px;
-            color: #a4a7ab;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .pos-meta span {
-            color: #ff007f;
-            font-weight: 600;
-        }
-
         .admin-btn {
             background: transparent;
             border: 1px solid #ff007f;
@@ -76,6 +64,7 @@
             grid-template-columns: 1fr 380px;
             flex: 1;
             overflow: hidden;
+            position: relative;
         }
 
         /* Left Side: Products and Categories */
@@ -90,14 +79,9 @@
         /* Search & Filters Controls */
         .controls-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
+            flex-direction: column;
+            gap: 15px;
             margin-bottom: 25px;
-        }
-
-        .search-bar {
-            flex: 1;
         }
 
         .search-bar input {
@@ -119,14 +103,17 @@
 
         .categories-filter {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 5px;
         }
+        .categories-filter::-webkit-scrollbar { display: none; }
 
         .cat-btn {
             background: #11141a;
             color: #a4a7ab;
             border: 1px solid #242933;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 13px;
@@ -145,8 +132,8 @@
         /* Products Grid Setup */
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
         }
 
         .product-card {
@@ -157,17 +144,17 @@
             text-align: center;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .product-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             border-color: rgba(255, 0, 127, 0.3);
-            box-shadow: 0 10px 20px rgba(255, 0, 127, 0.15);
+            box-shadow: 0 8px 15px rgba(255, 0, 127, 0.15);
         }
 
         .product-card h4 {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #fff;
             margin-top: 5px;
@@ -187,18 +174,19 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+            z-index: 95;
         }
 
         .terminal-header {
             padding: 20px;
             border-bottom: 1px solid #1f242e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .terminal-header h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #fff;
-        }
+        .close-cart-mobile { display: none; }
 
         .cart-items-container {
             flex: 1;
@@ -217,183 +205,114 @@
             border-left: 3px solid #00f2fe;
         }
 
-        .item-details h5 {
-            font-size: 13px;
-            font-weight: 600;
+        .item-details h5 { font-size: 13px; color: #fff; margin-bottom: 3px; }
+        .item-details span { font-size: 12px; color: #ff007f; font-weight: 600; }
+        .item-controls { display: flex; align-items: center; gap: 8px; }
+
+        .qty-btn {
+            background: #242933; color: #fff; border: none;
+            width: 24px; height: 24px; border-radius: 4px;
+            cursor: pointer; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .qty-btn:hover { background: #ff007f; }
+        .delete-item { color: #a4a7ab; background: transparent; border: none; cursor: pointer; font-size: 16px; margin-left: 5px; }
+
+        .checkout-panel { background: #171b24; padding: 20px; border-top: 1px solid #242933; }
+        .summary-row { display: flex; justify-content: space-between; font-size: 13px; color: #a4a7ab; margin-bottom: 8px; }
+        .summary-row.total-row { border-top: 1px dashed #242933; margin-top: 12px; padding-top: 12px; font-size: 16px; font-weight: 700; color: #00f2fe; }
+
+        .pay-btn {
+            width: 100%; background: #ff007f; color: #fff; border: none; padding: 14px; border-radius: 8px;
+            font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3);
+        }
+        .pay-btn:hover { background: #00f2fe; color: #0b0c10; box-shadow: 0 4px 20px rgba(0, 242, 254, 0.4); }
+
+        .empty-cart-text { color: #4a5366; text-align: center; font-size: 13px; margin-top: 40px; }
+
+        /* Mobile Floating Cart Button Trigger */
+        .mobile-cart-trigger {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ff007f;
             color: #fff;
-            margin-bottom: 3px;
-        }
-
-        .item-details span {
-            font-size: 12px;
-            color: #ff007f;
-            font-weight: 600;
-        }
-
-        .item-controls {
-            display: flex;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+            z-index: 90;
+            cursor: pointer;
             align-items: center;
             gap: 10px;
         }
 
-        .qty-btn {
-            background: #242933;
-            color: #fff;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .qty-btn:hover { background: #ff007f; }
-
-        .delete-item {
-            color: #a4a7ab;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            margin-left: 5px;
-        }
-
-        .delete-item:hover { color: #ff3333; }
-
-        .checkout-panel {
-            background: #171b24;
-            padding: 20px;
-            border-top: 1px solid #242933;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #a4a7ab;
-            margin-bottom: 8px;
-        }
-
-        .summary-row.total-row {
-            border-top: 1px dashed #242933;
-            margin-top: 12px;
-            padding-top: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            color: #00f2fe;
-        }
-
-        .pay-btn {
-            width: 100%;
-            background: #ff007f;
-            color: #fff;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 15px;
-            box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .pay-btn:hover {
-            background: #00f2fe;
-            color: #0b0c10;
-            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.4);
-        }
-
-        .empty-cart-text {
-            color: #4a5366;
-            text-align: center;
-            font-size: 13px;
-            margin-top: 40px;
-        }
-
-        /* Modals Configuration */
+        /* Modals and Popups */
         .invoice-modal, .admin-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5,6,8,0.95);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5,6,8,0.96); z-index: 9999; justify-content: center; align-items: center; padding: 15px;
         }
-
-        .receipt-box {
-            background: #ffffff;
-            color: #000000;
-            width: 100%;
-            max-width: 340px;
-            padding: 20px;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            font-family: 'Courier New', Courier, monospace;
-        }
-
+        .receipt-box { background: #ffffff; color: #000000; width: 100%; max-width: 340px; padding: 20px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; }
         .receipt-box h4 { text-align: center; margin-bottom: 5px; }
-        .receipt-box p { text-align: center; font-size: 12px; color: #555; margin-bottom: 10px; }
+        .receipt-box p { text-align: center; font-size: 12px; color: #555; }
         .receipt-line { border-bottom: 1px dashed #000; margin: 10px 0; }
         .receipt-item { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
 
-        .admin-box {
-            background: #11141a;
-            border: 1px solid #00f2fe;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 850px;
-            max-height: 85vh;
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 15px 0;
-        }
-
-        .analytics-card {
-            background: #171b24;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #ff007f;
-        }
+        .admin-box { background: #11141a; border: 1px solid #00f2fe; border-radius: 12px; width: 100%; max-width: 850px; max-height: 85vh; padding: 25px; display: flex; flex-direction: column; }
+        .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0; }
+        .analytics-card { background: #171b24; padding: 15px; border-radius: 8px; border-left: 4px solid #ff007f; }
         .analytics-card.prime { border-left-color: #00f2fe; }
+        .analytics-card span { font-size: 11px; color: #a4a7ab; display: block; }
+        .analytics-card h2 { font-size: 18px; color: #fff; margin-top: 5px; }
 
-        .analytics-card span { font-size: 12px; color: #a4a7ab; display: block; margin-bottom: 5px; }
-        .analytics-card h2 { font-size: 22px; color: #fff; }
-
-        .sales-table-wrapper {
-            flex: 1;
-            overflow-y: auto;
-            border: 1px solid #242933;
-            border-radius: 6px;
-        }
-
-        .sales-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        .sales-table th, .sales-table td { padding: 12px; border-bottom: 1px solid #242933; }
+        .sales-table-wrapper { flex: 1; overflow-y: auto; border: 1px solid #242933; border-radius: 6px; }
+        .sales-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .sales-table th, .sales-table td { padding: 10px; border-bottom: 1px solid #242933; text-align: left; }
         .sales-table th { background: #171b24; color: #a4a7ab; }
 
-        /* 🖨️ الحل النهائي للمشكلة: كود إخفاء عناصر الفاتورة تماماً عن واجهة الموقع المستعرض */
+        /* Responsive Layout Overrides for Mobile View 📱 */
+        @media (max-width: 900px) {
+            .pos-container { grid-template-columns: 1fr; }
+            
+            /* إخفاء لوحة الأوردر الجانبية وتحويلها لشاشة منبثقة تتحكمي فيها بالزرار */
+            .order-terminal {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                transform: translateX(100%); /* مخفية بره الشاشة تماماً */
+            }
+            .order-terminal.active-mobile-cart {
+                transform: translateX(0); /* تظهر سلايد لما تطلبيها */
+            }
+            
+            .close-cart-mobile {
+                display: block;
+                background: #242933;
+                color: #fff;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-weight: 600;
+                font-size: 12px;
+                cursor: pointer;
+            }
+
+            .mobile-cart-trigger { display: flex; } /* إظهار الزرار العائم للموبايل */
+            .products-section { padding: 15px; }
+            .analytics-grid { grid-template-columns: 1fr; gap: 10px; }
+        }
+
+        /* Print Override */
         @media print {
             body * { display: none !important; }
             #bill-modal, #bill-modal * { display: block !important; }
             .receipt-box { position: absolute; top: 0; left: 0; width: 100%; box-shadow: none; padding: 0; }
             .receipt-actions { display: none !important; }
-        }
-
-        @media (max-width: 1024px) {
-            .pos-container { grid-template-columns: 1fr; }
-            .order-terminal { height: 400px; border-left: none; border-top: 1px solid rgba(0, 242, 254, 0.1); }
         }
     </style>
 </head>
@@ -402,19 +321,19 @@
     <div class="pos-header">
         <div class="pos-logo">BH.AGENCY // POS</div>
         <div class="pos-meta">
-            <button class="admin-btn" onclick="openAdminLog()">📊 Review Dashboard</button>
-            <span>Terminal: 01</span>
+            <button class="admin-btn" onclick="openAdminLog()">📊 Review</button>
         </div>
     </div>
 
     <div class="pos-container">
+        <!-- قسم المنتجات -->
         <div class="products-section">
             <div class="controls-row">
                 <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="Search product item..." oninput="filterProducts()">
+                    <input type="text" id="search-input" placeholder="Search item..." oninput="filterProducts()">
                 </div>
                 <div class="categories-filter">
-                    <button class="cat-btn active" onclick="switchCategory('all', this)">All Menu</button>
+                    <button class="cat-btn active" onclick="switchCategory('all', this)">All</button>
                     <button class="cat-btn" onclick="switchCategory('burger', this)">Burgers</button>
                     <button class="cat-btn" onclick="switchCategory('drinks', this)">Drinks</button>
                     <button class="cat-btn" onclick="switchCategory('desserts', this)">Desserts</button>
@@ -423,8 +342,12 @@
             <div class="products-grid" id="products-grid-container"></div>
         </div>
 
-        <div class="order-terminal">
-            <div class="terminal-header"><h3>Current Active Order</h3></div>
+        <!-- لوحة الأوردر الجانبية / شاشة كاملة عالموبايل -->
+        <div class="order-terminal" id="order-terminal-panel">
+            <div class="terminal-header">
+                <h3>Active Order</h3>
+                <button class="close-cart-mobile" onclick="toggleMobileCart(false)">⬅ Back to Menu</button>
+            </div>
             <div class="cart-items-container" id="cart-items-wrapper">
                 <div class="empty-cart-text">Terminal Empty. Select items to construct invoice order.</div>
             </div>
@@ -432,41 +355,33 @@
                 <div class="summary-row"><span>Subtotal</span><span id="subtotal-val">0.00 EGP</span></div>
                 <div class="summary-row"><span>Tax (14%)</span><span id="tax-val">0.00 EGP</span></div>
                 <div class="summary-row total-row"><span>Total Amount</span><span id="total-val">0.00 EGP</span></div>
-                <button class="pay-btn" onclick="triggerCheckout()">Complete Order & Print Bill</button>
+                <button class="pay-btn" onclick="triggerCheckout()">Complete & Print Bill</button>
             </div>
         </div>
     </div>
 
+    <!-- زرار الكارت العائم للموبايل فقط -->
+    <button class="mobile-cart-trigger" onclick="toggleMobileCart(true)">
+        <span>🛒 View Active Order</span>
+        <span id="mobile-badge" style="background:#fff; color:#ff007f; padding:2px 8px; border-radius:10px; font-size:12px;">0</span>
+    </button>
+
+    <!-- لوحة المالك الإحصائية باليوم -->
     <div class="admin-modal" id="admin-modal">
         <div class="admin-box">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="color: #00f2fe;">Owner Smart Analytics Panel</h3>
+                <h3 style="color: #00f2fe;">Owner Smart Analytics</h3>
                 <button class="admin-btn" style="border-color:#fff; color:#fff;" onclick="closeAdminLog()">Close</button>
             </div>
-            
             <div class="analytics-grid">
-                <div class="analytics-card prime">
-                    <span>TODAY'S REVENUE</span>
-                    <h2 id="dash-today-revenue">0.00 EGP</h2>
-                </div>
-                <div class="analytics-card">
-                    <span>TODAY'S ORDERS</span>
-                    <h2 id="dash-today-count">0</h2>
-                </div>
-                <div class="analytics-card">
-                    <span>ALL-TIME TOTAL</span>
-                    <h2 id="dash-all-revenue">0.00 EGP</h2>
-                </div>
+                <div class="analytics-card prime"><span>TODAY'S REVENUE</span><h2 id="dash-today-revenue">0.00 EGP</h2></div>
+                <div class="analytics-card"><span>TODAY'S ORDERS</span><h2 id="dash-today-count">0</h2></div>
+                <div class="analytics-card"><span>ALL-TIME TOTAL</span><h2 id="dash-all-revenue">0.00 EGP</h2></div>
             </div>
-
             <div class="sales-table-wrapper">
                 <table class="sales-table">
                     <thead>
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>Order Details</th>
-                            <th>Total Amount</th>
-                        </tr>
+                        <tr><th>Date & Time</th><th>Order Details</th><th>Total Amount</th></tr>
                     </thead>
                     <tbody id="sales-log-rows"></tbody>
                 </table>
@@ -474,15 +389,13 @@
         </div>
     </div>
 
+    <!-- مودال الفاتورة للطباعة -->
     <div class="invoice-modal" id="bill-modal">
         <div class="receipt-box">
             <h4>BH.AGENCY RESTAURANT</h4>
             <p>123 Digital Neon Street, Cairo</p>
             <div class="receipt-line"></div>
-            <div style="font-size: 11px; margin-bottom: 10px;">
-                Date: <span id="receipt-date">--/--/----</span><br>
-                Cashier: Terminal 01
-            </div>
+            <div style="font-size: 11px; margin-bottom: 10px;">Date: <span id="receipt-date">--</span><br>Cashier: Terminal 01</div>
             <div class="receipt-line"></div>
             <div id="receipt-items-list"></div>
             <div class="receipt-line"></div>
@@ -539,12 +452,18 @@
                 card.className = 'product-card';
                 card.onclick = () => addProductToCart(product.id);
                 card.innerHTML = `
-                    <div style="font-size: 35px; margin-bottom: 8px;">${product.img}</div>
+                    <div style="font-size: 32px; margin-bottom: 5px;">${product.img}</div>
                     <h4>${product.name}</h4>
                     <div class="price">${product.price.toFixed(2)} EGP</div>
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        function toggleMobileCart(open) {
+            const panel = document.getElementById('order-terminal-panel');
+            if(open) panel.classList.add('active-mobile-cart');
+            else panel.classList.remove('active-mobile-cart');
         }
 
         function switchCategory(catName, btnElement) {
@@ -583,11 +502,14 @@
 
         function updateCartTerminalView() {
             const wrapper = document.getElementById('cart-items-wrapper');
+            let totalItemsCount = 0;
+
             if (activeCart.length === 0) {
                 wrapper.innerHTML = '<div class="empty-cart-text">Terminal Empty. Select items to construct invoice order.</div>';
                 document.getElementById('subtotal-val').innerText = '0.00 EGP';
                 document.getElementById('tax-val').innerText = '0.00 EGP';
                 document.getElementById('total-val').innerText = '0.00 EGP';
+                document.getElementById('mobile-badge').innerText = '0';
                 return;
             }
 
@@ -597,6 +519,7 @@
             activeCart.forEach(entry => {
                 const itemCost = entry.product.price * entry.qty;
                 calculatedSubtotal += itemCost;
+                totalItemsCount += entry.qty;
 
                 const row = document.createElement('div');
                 row.className = 'cart-item';
@@ -607,7 +530,7 @@
                     </div>
                     <div class="item-controls">
                         <button class="qty-btn" onclick="alterQuantity(${entry.product.id}, -1)">-</button>
-                        <span class="item-qty">${entry.qty}</span>
+                        <span style="font-size:13px; font-weight:600;">${entry.qty}</span>
                         <button class="qty-btn" onclick="alterQuantity(${entry.product.id}, 1)">+</button>
                         <button class="delete-item" onclick="purgeCartItem(${entry.product.id})">×</button>
                     </div>
@@ -621,6 +544,7 @@
             document.getElementById('subtotal-val').innerText = `${calculatedSubtotal.toFixed(2)} EGP`;
             document.getElementById('tax-val').innerText = `${calculatedTax.toFixed(2)} EGP`;
             document.getElementById('total-val').innerText = `${absoluteTotal.toFixed(2)} EGP`;
+            document.getElementById('mobile-badge').innerText = totalItemsCount;
         }
 
         function triggerCheckout() {
@@ -656,7 +580,6 @@
             
             document.getElementById('receipt-date').innerText = fullTimestamp;
 
-            // حفظ البيانات باليوم والتاريخ منفصلين للهيكلة الذكية
             const newOrderRecord = {
                 date: dateStr,
                 timestamp: fullTimestamp,
@@ -668,27 +591,14 @@
             globalSalesLog.push(newOrderRecord);
             localStorage.setItem('bh_pos_sales_log', JSON.stringify(globalSalesLog));
 
-            sendOrderToGoogleSheet(newOrderRecord);
-
             document.getElementById('bill-modal').style.display = 'flex';
-        }
-
-        function sendOrderToGoogleSheet(orderData) {
-            const googleSheetWebAppUrl = "YOUR_GOOGLE_SCRIPT_WEB_APP_URL"; 
-            if(googleSheetWebAppUrl === "YOUR_GOOGLE_SCRIPT_WEB_APP_URL") return;
-
-            fetch(googleSheetWebAppUrl, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(orderData)
-            });
         }
 
         function closeInvoice() {
             document.getElementById('bill-modal').style.display = 'none';
             activeCart = [];
             updateCartTerminalView();
+            toggleMobileCart(false); // إغلاق لوحة الموبايل تلقائياً بعد الفاتورة
         }
 
         function openAdminLog() {
@@ -704,8 +614,6 @@
 
                 globalSalesLog.forEach(sale => {
                     allTimeRevenue += sale.rawTotal;
-                    
-                    // فحص إذا كان الأوردر طالع النهاردة عشان يتعمل له إحصائية لوحده
                     if(sale.date === todayStr) {
                         todayRevenue += sale.rawTotal;
                         todayCount++;
@@ -730,9 +638,7 @@
             }
         }
 
-        function closeAdminLog() {
-            document.getElementById('admin-modal').style.display = 'none';
-        }
+        function closeAdminLog() { document.getElementById('admin-modal').style.display = 'none'; }
 
         renderMenuGrid();
     </script>
